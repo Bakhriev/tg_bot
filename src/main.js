@@ -14,20 +14,29 @@ const nextBtn = document.querySelector("[data-step-next-btn]");
 const submitBtn = document.querySelector("[data-submit-btn]");
 
 // Пока не очень понятно как использовать
-// localStorage.clear();
+localStorage.clear();
 const STORAGE_KEY = "supercellSendCode";
 const STORAGE = JSON.parse(localStorage.getItem(STORAGE_KEY));
 
 const getInfo = async () => {
-  const data = await fetch(
-    "https://67373faaaafa2ef2223329b8.mockapi.io/supercell_otpravka_koda"
-  ).then((res) => res.json());
+  const URL =
+    "https://user176.cloud-ru.vejio.su/cr-system/scenario/supercell_poluchit_posledniy_zapros_koda";
 
-  const email = data[0]?.email || null;
-  const canSendCode = data[0]?.can_send_code || true;
-  const secondsPassed = data[0]?.seconds_passed || 60;
+  try {
+    const response = await page.executeBackendScenario(URL, {});
 
-  return { email, canSendCode, secondsPassed };
+    return {
+      email: response?.email ?? null,
+      canSendCode: response?.can_send_code ?? true,
+      secondsPassed: response?.seconds_passed ?? null,
+    };
+  } catch {
+    return {
+      email: null,
+      canSendCode: true,
+      secondsPassed: null,
+    };
+  }
 };
 
 const handleNextStep = async () => {
@@ -37,7 +46,7 @@ const handleNextStep = async () => {
 
   nextBtn.classList.add("loading");
 
-  const { canSendCode, email } = await getInfo();
+  const { email, canSendCode, secondsPassed } = await getInfo();
 
   if (!canSendCode) {
     changeStep(1);
