@@ -1,6 +1,8 @@
 import { initModal } from "./modules/modal";
 import { showHelpPopup } from "./modules/popups";
 
+const errorModal = initModal();
+
 // localStorage.clear();
 const emailField = document.querySelector("#email");
 const emailDisplay = document.querySelector("[data-email-display]");
@@ -14,13 +16,22 @@ const nextBtn = document.querySelector("[data-step-next-btn]");
 const submitBtn = document.querySelector("[data-submit-btn]");
 const resendBtn = document.querySelector("[data-resend-btn]");
 
-const errorModal = initModal();
+const STORAGE_KEY = "supercellSendCode";
 
-const handleNextStep = () => {};
+const STORAGE = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+const handleNextStep = () => {
+  const email = emailField.value;
+
+  if (!isEmailValid(email)) return;
+
+  sendCode();
+  changeStep(1);
+  emailDisplay.textContent = email;
+};
 
 const sendCode = async () => {
   const queryParams = new URLSearchParams(document.location.search);
-
   const order_id = queryParams.get("order_id");
   const order_serial_number = queryParams.get("order_serial_number");
 
@@ -47,12 +58,10 @@ const sendCode = async () => {
 
 const compareCode = () => {
   const queryParams = new URLSearchParams(document.location.search);
-
   const order_id = queryParams.get("order_id");
   const order_serial_number = queryParams.get("order_serial_number");
 
-  const email = emailField?.value;
-
+  const email = emailField.value;
   const code = getCode();
 
   if (code.length !== 6) return;
@@ -80,6 +89,7 @@ const compareCode = () => {
 };
 
 // Util functions
+
 const getCode = () => {
   const inputs = Array.from(document.querySelectorAll(".code"));
   return inputs.map((input) => input.value).join("");
@@ -89,6 +99,11 @@ const changeStep = (index) => {
   steps.forEach((step, i) => {
     step.dataset.visible = i === index ? "true" : "false";
   });
+};
+
+const isEmailValid = (email) => {
+  const re = /\S+@\S+\.\S+/;
+  return re.test(email);
 };
 
 // Primary code
