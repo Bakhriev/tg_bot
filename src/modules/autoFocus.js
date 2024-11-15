@@ -21,16 +21,3 @@ export const initCodeInputAutoFocus = () => {
     });
   });
 };
-
-// Проверка на валидность email
-const isEmailValid = (email) => {
-  const re = /\S+@\S+\.\S+/;
-  return re.test(email);
-};
-
-const setEmail = () => {
-  const savedEmail = localStorage.getItem("email"); // Берем email из localStorage
-  if (emailDisplay && savedEmail) {
-    emailDisplay.textContent = savedEmail; // Показываем сохраненный email
-  }
-};

@@ -1,11 +1,46 @@
 .btn {
+  position: relative;
+
   height: 40px;
   border-radius: 8px;
   padding: 10px;
   background-color: #17222d;
   color: #fff;
+
   &:active {
     scale: 0.99;
+  }
+
+  &.loading {
+    cursor: wait;
+    pointer-events: none; // Отключаем взаимодействие
+    opacity: 0.7; // Добавляем визуальный эффект
+    color: transparent; // Скрываем текст
+    background-color: #1c2835; // Немного меняем фон для отличия
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px; // Центрирование по вертикали и горизонтали
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite; // Анимация загрузки
+    }
+  }
+}
+
+// Анимация вращения
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 

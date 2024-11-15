@@ -1,0 +1,9 @@
+[
+  {
+    "ok": true,
+    "sent_at": "2024.15.11",
+    "seconds_passed": 20,
+    "email": "temp@gmail.com",
+    "can_send_code": true
+  }
+]

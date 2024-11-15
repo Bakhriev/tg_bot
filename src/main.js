@@ -1,6 +1,6 @@
 import { initCodeInputAutoFocus } from "./modules/autoFocus";
 import { initModal } from "./modules/modal";
-import { showHelpPopup } from "./modules/popups";
+import { showHelpPopup, showTimerPopup } from "./modules/popups";
 
 const errorModal = initModal();
 
@@ -18,13 +18,39 @@ const submitBtn = document.querySelector("[data-submit-btn]");
 const STORAGE_KEY = "supercellSendCode";
 const STORAGE = JSON.parse(localStorage.getItem(STORAGE_KEY));
 
+const getInfo = async () => {
+  const data = await fetch(
+    "https://67373faaaafa2ef2223329b8.mockapi.io/supercell_otpravka_koda"
+  ).then((res) => res.json());
+
+  const email = data[0]?.email || null;
+  const canSendCode = data[0]?.can_send_code || true;
+  const secondsPassed = data[0]?.seconds_passed || 60;
+
+  return { email, canSendCode, secondsPassed };
+};
+
 const handleNextStep = async () => {
-  const email = emailField.value;
+  const currentEmail = emailField.value;
 
-  if (!isEmailValid(email)) return;
+  if (!isEmailValid(currentEmail)) return;
 
-  sendCode();
+  nextBtn.classList.add("loading");
+
+  const { canSendCode, email } = await getInfo();
+
+  if (!canSendCode) {
+    changeStep(1);
+
+    emailDisplay.textContent = email;
+
+    return;
+  }
+
+  await sendCode();
   changeStep(1);
+  emailDisplay.textContent = currentEmail;
+  nextBtn.classList.remove("loading");
 };
 
 const sendCode = async () => {
