@@ -17,6 +17,7 @@ const submitBtn = document.querySelector("[data-submit-btn]");
 localStorage.clear();
 const STORAGE_KEY = "supercellSendCode";
 const STORAGE = JSON.parse(localStorage.getItem(STORAGE_KEY));
+const a = {};
 
 const getInfo = async () => {
   const URL =
@@ -24,12 +25,13 @@ const getInfo = async () => {
 
   try {
     const response = await page.executeBackendScenario(URL, {});
-
-    return {
-      email: response?.email || null,
-      canSendCode: response?.can_send_code || true,
-      secondsPassed: response?.seconds_passed || null,
-    };
+    if (response.ok) {
+      return {
+        email: response?.email || null,
+        canSendCode: response?.can_send_code || true,
+        secondsPassed: response?.seconds_passed || null,
+      };
+    }
   } catch {
     return {
       email: null,
