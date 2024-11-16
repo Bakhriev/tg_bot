@@ -45,20 +45,19 @@ const handleNextStep = async () => {
   const { email, canSendCode, secondsPassed } = await getInfo();
 
   if (!canSendCode) {
-    changeStep(1);
-
     emailDisplay.textContent = email;
     nextBtn.classList.remove("loading");
-
     startTimer(secondsPassed);
+
+    changeStep(1);
 
     return;
   }
 
   await sendCode();
-  changeStep(1);
-  emailDisplay.textContent = currentEmail;
   startTimer(58);
+  emailDisplay.textContent = currentEmail;
+  changeStep(1);
   nextBtn.classList.remove("loading");
 };
 
@@ -140,10 +139,11 @@ const compareCode = () => {
         if (!res.ok) {
           errorModal.show(res.message);
         }
+
+        submitBtn.classList.remove("loading");
       });
   } catch (error) {
     console.error("Error confirm code:", error);
-  } finally {
     submitBtn.classList.remove("loading");
   }
 };
