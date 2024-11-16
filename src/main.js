@@ -1,6 +1,24 @@
-import { initCodeInputAutoFocus } from "./modules/autoFocus";
-import { initModal } from "./modules/modal";
-import { showHelpPopup, showTimerPopup } from "./modules/popups";
+const initModal = () => {
+  const errorModal = document.querySelector('[data-modal="error"]');
+  const modalErrorText = errorModal?.querySelector?.("[data-modal-error-text]");
+  const closeBtn = errorModal?.querySelector?.("[data-destroyer]");
+
+  const show = (text) => {
+    modalErrorText.textContent = text;
+    errorModal?.classList.add("active");
+  };
+
+  const hide = () => errorModal?.classList.remove("active");
+
+  errorModal?.addEventListener(
+    "click",
+    (e) => e.target === errorModal && hide()
+  );
+
+  closeBtn?.addEventListener("click", hide);
+
+  return { show, hide };
+};
 
 const errorModal = initModal();
 
@@ -176,6 +194,30 @@ const isEmailValid = (email) => {
   return re.test(email);
 };
 
+const initCodeInputAutoFocus = () => {
+  const codeInputs = document.querySelectorAll(".code");
+
+  codeInputs.forEach((input, index) => {
+    input.addEventListener("input", () => {
+      if (input.value.length === 1) {
+        const nextInput = codeInputs[index + 1];
+        if (nextInput) {
+          nextInput.focus();
+        }
+      }
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Backspace" && input.value === "") {
+        const prevInput = codeInputs[index - 1];
+        if (prevInput) {
+          prevInput.focus();
+        }
+      }
+    });
+  });
+};
+
 initCodeInputAutoFocus();
 
 // Primary code
@@ -214,5 +256,11 @@ resendBtn.addEventListener("click", async () => {
 //
 //
 //
+const showHelpPopup = () => {
+  const popup = page.getPopup("popup-faq");
+  popup.show();
+  errorModal.hide();
+};
+
 const helpBtns = document.querySelectorAll("[data-help-btn]");
 helpBtns.forEach((helpBtn) => helpBtn.addEventListener("click", showHelpPopup));
