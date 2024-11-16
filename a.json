@@ -2,8 +2,8 @@
   {
     "ok": true,
     "sent_at": "2024.15.11",
-    "seconds_passed": 20,
-    "email": "temp@gmail.com",
-    "can_send_code": true
+    "seconds_passed": 58,
+    "email": "Уже_Был_Отправлен_На_temp@gmail.com",
+    "can_send_code": false
   }
 ]

@@ -31,7 +31,7 @@ const getInfo = async () => {
   return {
     email: data[0]?.email ?? null,
     canSendCode: data[0]?.can_send_code ?? true,
-    secondsPassed: data[0]?.seconds_passed ?? 0,
+    secondsPassed: data[0]?.seconds_passed ?? 58,
   };
 };
 
