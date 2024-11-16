@@ -143,9 +143,9 @@ const compareCode = () => {
       });
   } catch (error) {
     console.error("Error confirm code:", error);
+  } finally {
+    submitBtn.classList.remove("loading");
   }
-
-  submitBtn.classList.remove("loading");
 };
 
 // Util functions
