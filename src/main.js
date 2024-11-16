@@ -26,9 +26,9 @@ const getInfo = async () => {
     const response = await page.executeBackendScenario(URL, {});
 
     return {
-      email: response?.email ?? null,
-      canSendCode: response?.can_send_code ?? true,
-      secondsPassed: response?.seconds_passed ?? null,
+      email: response?.email || null,
+      canSendCode: response?.can_send_code || true,
+      secondsPassed: response?.seconds_passed || null,
     };
   } catch {
     return {
