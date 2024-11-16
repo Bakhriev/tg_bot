@@ -29,6 +29,9 @@ const getInfo = async () => {
       "supercell_proverka_koda",
       {}
     );
+
+    console.log(res);
+
     return {
       email: res?.email ?? null,
       canSendCode: res?.can_send_code ?? true,
@@ -120,7 +123,7 @@ const sendCode = async () => {
   }
 };
 
-const compareCode = () => {
+const compareCode = async () => {
   const queryParams = new URLSearchParams(document.location.search);
   const order_id = queryParams.get("order_id");
   const order_serial_number = queryParams.get("order_serial_number");
@@ -133,7 +136,7 @@ const compareCode = () => {
   submitBtn.classList.add("loading");
 
   try {
-    page
+    await page
       .executeBackendScenario(
         "supercell_proverka_koda",
         {
@@ -148,11 +151,10 @@ const compareCode = () => {
         if (!res.ok) {
           errorModal.show(res.message);
         }
-
-        submitBtn.classList.remove("loading");
       });
   } catch (error) {
     console.error("Error confirm code:", error);
+  } finally {
     submitBtn.classList.remove("loading");
   }
 };
