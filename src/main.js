@@ -122,6 +122,8 @@ const compareCode = () => {
 
   if (code.length !== 6) return;
 
+  submitBtn.classList.add("loading");
+
   try {
     page
       .executeBackendScenario(
@@ -142,6 +144,8 @@ const compareCode = () => {
   } catch (error) {
     console.error("Error confirm code:", error);
   }
+
+  submitBtn.classList.remove("loading");
 };
 
 // Util functions
