@@ -24,15 +24,24 @@ const STORAGE_KEY = "supercellSendCode";
 const STORAGE = JSON.parse(localStorage.getItem(STORAGE_KEY));
 
 const getInfo = async () => {
-  const data = await fetch(
-    "https://67373faaaafa2ef2223329b8.mockapi.io/supercell_otpravka_koda"
-  ).then((res) => res.json());
-
-  return {
-    email: data[0]?.email ?? null,
-    canSendCode: data[0]?.can_send_code ?? true,
-    secondsPassed: data[0]?.seconds_passed ?? 58,
-  };
+  try {
+    const res = await page.executeBackendScenario(
+      "supercell_proverka_koda",
+      {}
+    );
+    return {
+      email: res?.email ?? null,
+      canSendCode: res?.can_send_code ?? true,
+      secondsPassed: res?.seconds_passed ?? 58,
+    };
+  } catch (error) {
+    console.error(`Error on get info: ${error}`);
+    return {
+      email: null,
+      canSendCode: true,
+      secondsPassed: 58,
+    };
+  }
 };
 
 const handleNextStep = async () => {
