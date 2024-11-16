@@ -7,6 +7,11 @@ const errorModal = initModal();
 const emailField = document.querySelector("#email");
 const emailDisplay = document.querySelector("[data-email-display]");
 
+const resendWrapper = document.querySelector(".resend-wrapper");
+const resendBtn = document.querySelector("[data-resend-btn]");
+
+const timerDisplay = document.querySelector("[data-timer-text]");
+
 const steps = document.querySelectorAll(".step");
 const prevBtn = document.querySelector("[data-step-prev-btn]");
 const nextBtn = document.querySelector("[data-step-next-btn]");
@@ -17,28 +22,17 @@ const submitBtn = document.querySelector("[data-submit-btn]");
 localStorage.clear();
 const STORAGE_KEY = "supercellSendCode";
 const STORAGE = JSON.parse(localStorage.getItem(STORAGE_KEY));
-const a = {};
 
 const getInfo = async () => {
-  const URL =
-    "https://user176.cloud-ru.vejio.su/cr-system/scenario/supercell_poluchit_posledniy_zapros_koda";
+  const data = await fetch(
+    "https://67373faaaafa2ef2223329b8.mockapi.io/supercell_otpravka_koda"
+  ).then((res) => res.json());
 
-  try {
-    const response = await page.executeBackendScenario(URL, {});
-    if (response.ok) {
-      return {
-        email: response?.email || null,
-        canSendCode: response?.can_send_code || true,
-        secondsPassed: response?.seconds_passed || null,
-      };
-    }
-  } catch {
-    return {
-      email: null,
-      canSendCode: true,
-      secondsPassed: null,
-    };
-  }
+  return {
+    email: data[0]?.email ?? null,
+    canSendCode: data[0]?.can_send_code ?? true,
+    secondsPassed: data[0]?.seconds_passed ?? 0,
+  };
 };
 
 const handleNextStep = async () => {
@@ -54,6 +48,9 @@ const handleNextStep = async () => {
     changeStep(1);
 
     emailDisplay.textContent = email;
+    nextBtn.classList.remove("loading");
+
+    startTimer(secondsPassed);
 
     return;
   }
@@ -61,7 +58,32 @@ const handleNextStep = async () => {
   await sendCode();
   changeStep(1);
   emailDisplay.textContent = currentEmail;
+  startTimer(58);
   nextBtn.classList.remove("loading");
+};
+
+let interval;
+const startTimer = (secondsPassed) => {
+  clearInterval(interval);
+
+  if (secondsPassed >= 60) return;
+
+  let time = 60 - secondsPassed;
+
+  resendWrapper.classList.add("hidden");
+  timerDisplay.classList.remove("hidden");
+  timerDisplay.textContent = `Код отправлен. Повторная отправка будет доступна через ${time} секунд`;
+
+  interval = setInterval(() => {
+    time--;
+    timerDisplay.textContent = `Код отправлен. Повторная отправка будет доступна через ${time} секунд`;
+
+    if (time <= 0) {
+      clearInterval(interval);
+      timerDisplay.classList.add("hidden");
+      resendWrapper.classList.remove("hidden");
+    }
+  }, 1000);
 };
 
 const sendCode = async () => {
@@ -148,6 +170,17 @@ prevBtn?.addEventListener("click", () => changeStep(0));
 nextBtn?.addEventListener("click", handleNextStep);
 
 submitBtn?.addEventListener("click", compareCode);
+
+resendBtn.addEventListener("click", async () => {
+  submitBtn.classList.add("loading");
+
+  const { secondsPassed } = await getInfo();
+
+  await sendCode();
+  startTimer(secondsPassed);
+
+  submitBtn.classList.remove("loading");
+});
 
 //
 //
