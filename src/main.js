@@ -36,31 +36,29 @@ const nextBtn = document.querySelector("[data-step-next-btn]");
 
 const submitBtn = document.querySelector("[data-submit-btn]");
 
-// Пока не очень понятно как использовать
-localStorage.clear();
-const STORAGE_KEY = "supercellSendCode";
-const STORAGE = JSON.parse(localStorage.getItem(STORAGE_KEY));
-
 const getInfo = async () => {
+  const queryParams = new URLSearchParams(document.location.search);
+  const order_id = queryParams.get("order_id");
+
   try {
     const res = await page.executeBackendScenario(
-      "supercell_proverka_koda",
-      {}
+      "supercell_poluchit_posledniy_zapros_koda",
+      {
+        order_id,
+      }
     );
-
-    console.log(res);
 
     return {
       email: res?.email ?? null,
       canSendCode: res?.can_send_code ?? true,
-      secondsPassed: res?.seconds_passed ?? 58,
+      secondsPassed: res?.seconds_passed ?? 0,
     };
   } catch (error) {
     console.error(`Error on get info: ${error}`);
     return {
       email: null,
       canSendCode: true,
-      secondsPassed: 58,
+      secondsPassed: 0,
     };
   }
 };
@@ -85,7 +83,7 @@ const handleNextStep = async () => {
   }
 
   await sendCode();
-  startTimer(58);
+  startTimer(0);
   emailDisplay.textContent = currentEmail;
   changeStep(1);
   nextBtn.classList.remove("loading");
