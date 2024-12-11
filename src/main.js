@@ -82,11 +82,13 @@ const handleNextStep = async () => {
     return;
   }
 
-  await sendCode();
-  startTimer(0);
-  emailDisplay.textContent = currentEmail;
-  changeStep(1);
-  nextBtn.classList.remove("loading");
+  const isCodeSended = await sendCode();
+  if (isCodeSended) {
+    startTimer(0);
+    emailDisplay.textContent = currentEmail;
+    changeStep(1);
+    nextBtn.classList.remove("loading");
+  }
 };
 
 let interval;
@@ -118,6 +120,13 @@ const sendCode = async () => {
   const order_id = queryParams.get("order_id");
   const order_serial_number = queryParams.get("order_serial_number");
 
+  if (!order_id || !order_serial_number) {
+    errorModal.setText("Заказ не найден.");
+    errorModal.show();
+
+    return;
+  }
+
   const email = emailField.value;
 
   try {
@@ -133,9 +142,13 @@ const sendCode = async () => {
 
     if (!response.ok) {
       errorModal.show(response.message);
+      return false;
     }
+
+    return true;
   } catch (error) {
     console.error("Error sending code:", error);
+    return false;
   }
 };
 
